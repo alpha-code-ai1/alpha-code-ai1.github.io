@@ -16,15 +16,34 @@
   <link rel="manifest" href="manifest.json">
 
   <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "560614483";
+    const serviceWorkerVersion = "1249311844";
   </script>
-  <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
 </head>
 <body>
   <script>
     window.addEventListener('load', function(ev) {
+      // Initialize image picker for web
+      window.flutterWebImagePicker = {
+        pickImage: function() {
+          return new Promise((resolve, reject) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = () => {
+              if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+              }
+            };
+            input.click();
+          });
+        }
+      };
+
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
@@ -37,28 +56,6 @@
         }
       });
     });
-  </script>
-  <script src="https://unpkg.com/browse/image_picker_web@2.1.0/assets/js/flutter_image_picker.js"></script>
-  <script>
-    window.flutterWebImagePicker = {
-      pickImage: function() {
-        return new Promise((resolve, reject) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.onchange = () => {
-            if (input.files && input.files.length > 0) {
-              const file = input.files[0];
-              const reader = new FileReader();
-              reader.readAsDataURL(file);
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = error => reject(error);
-            }
-          };
-          input.click();
-        });
-      }
-    };
   </script>
 </body>
 </html>
